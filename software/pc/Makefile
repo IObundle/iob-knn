@@ -1,7 +1,3 @@
-ifneq ($D,)
-DEFINE+=-DDEBUG
-endif
-
 all:
 	gcc -g -Wall *.c $(DEFINE)
 	./a.out

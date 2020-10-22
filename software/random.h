@@ -1,5 +1,6 @@
 #define PHI 0x9e3779b9
-#define CMWC_CYCLE 4096
+//#define CMWC_CYCLE 4096
+#define CMWC_CYCLE 256
 
 /* Seed the pseudo-random number generator. */
 /* This is shared by all functions. */

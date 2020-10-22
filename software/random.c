@@ -10,6 +10,8 @@ void random_init(unsigned int seed){
     Q[1] = seed + PHI;
     Q[2] = seed + PHI + PHI;
 
+    uart_printf("\nHello world!\n");
+
     for (i = 3; i < CMWC_CYCLE; i++)
         Q[i] = Q[i - 3] ^ Q[i - 2] ^ PHI ^ i;
 }
