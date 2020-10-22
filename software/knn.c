@@ -70,27 +70,25 @@ int main() {
   unsigned long long elapsed;
   unsigned int elapsedu;
 
-  //init timer and uart
-  timer_init(TIMER_BASE);
+  //init uart and timer
   uart_init(UART_BASE, FREQ/BAUD);
-
-  uart_printf("\nHello world!\n");
-  
+  uart_printf("\nInit timer\n");
   uart_txwait();
 
+  timer_init(TIMER_BASE);
   //read current timer count, compute elapsed time
-  elapsed  = timer_get_count();
-  elapsedu = timer_time_us();
+  //elapsed  = timer_get_count();
+  //elapsedu = timer_time_us();
 
+
+  //int vote accumulator
   int votes_acc[C] = {0};
 
   //generate random seed 
   random_init(elapsedu);
 
-  
 
-
-  //init data set
+  //init dataset
   for (int i=0; i<N; i++) {
 
     //init coordinates
