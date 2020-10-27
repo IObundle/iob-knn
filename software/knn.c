@@ -8,7 +8,7 @@
 //uncomment to use rand from C lib 
 //#define cmwc_rand rand
 
-#ifdef DEBUG //type make DEBUG=1 to print debug info
+#ifndef DEBUG //type make DEBUG=1 to print debug info
 #define S 12   //random seed
 #define N 10 //data set size
 #define K 4   //number of neighbours (K)
@@ -86,7 +86,6 @@ int main() {
 
   //generate random seed 
   random_init(elapsedu);
-
 
   //init dataset
   for (int i=0; i<N; i++) {
@@ -193,6 +192,10 @@ int main() {
   } //all test points classified
 
   //stop knn here
+  //read current timer count, compute elapsed time
+  elapsedu = timer_time_us(TIMER_BASE);
+  uart_printf("\nExecution time: %dus @%dMHz\n\n", elapsedu, FREQ/1000000);
+
   
   //print classification distribution to check for statistical bias
   for (int l=0; l<C; l++)
