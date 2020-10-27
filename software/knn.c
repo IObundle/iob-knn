@@ -8,18 +8,18 @@
 //uncomment to use rand from C lib 
 //#define cmwc_rand rand
 
-#ifndef DEBUG //type make DEBUG=1 to print debug info
-#define S 12   //random seed
-#define N 10 //data set size
+#ifdef DEBUG //type make DEBUG=1 to print debug info
+#define S 12  //random seed
+#define N 10  //data set size
 #define K 4   //number of neighbours (K)
-#define C 4   //data classes
-#define M 4   //samples to be classified
+#define C 4   //number data classes
+#define M 4   //number samples to be classified
 #else
-#define S 12   //random seed
-#define N 100000 //data set size
-#define K 10   //number of neighbours (K)
-#define C 4   //data classes
-#define M 100   //samples to be classified
+#define S 12   
+#define N 100000
+#define K 10  
+#define C 4  
+#define M 100 
 #endif
 
 #define INFINITE ~0
@@ -85,7 +85,7 @@ int main() {
   int votes_acc[C] = {0};
 
   //generate random seed 
-  random_init(elapsedu);
+  random_init(S);
 
   //init dataset
   for (int i=0; i<N; i++) {
