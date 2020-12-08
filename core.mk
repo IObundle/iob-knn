@@ -1,5 +1,5 @@
-CORE_NAME:=KNN
-IS_CORE:=1
+CORE_NAME=KNN
+IS_CORE=1
 USE_NETLIST ?=0
 
 #PATHS
@@ -60,7 +60,7 @@ INTEL ?=1
 XILINX ?=1
 
 VLINE:="V$(VERSION)"
-version.txt:
+$(CORE_NAME)_version.txt:
 ifeq ($(VERSION),)
 	$(error "variable VERSION is not set")
 endif
