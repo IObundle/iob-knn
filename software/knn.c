@@ -4,6 +4,7 @@
 #include "iob_timer.h"
 #include "iob_knn.h"
 #include "random.h" //random generator for bare metal
+#include "printf.h" 
 
 //uncomment to use rand from C lib 
 //#define cmwc_rand rand
@@ -72,7 +73,7 @@ int main() {
 
   //init uart and timer
   uart_init(UART_BASE, FREQ/BAUD);
-  uart_printf("\nInit timer\n");
+  printf("\nInit timer\n");
   uart_txwait();
 
   timer_init(TIMER_BASE);
@@ -99,10 +100,10 @@ int main() {
   }
 
 #ifdef DEBUG
-  uart_printf("\n\n\nDATASET\n");
-  uart_printf("Idx \tX \tY \tLabel\n");
+  printf("\n\n\nDATASET\n");
+  printf("Idx \tX \tY \tLabel\n");
   for (int i=0; i<N; i++)
-    uart_printf("%d \t%d \t%d \t%d\n", i, data[i].x,  data[i].y, data[i].label);
+    printf("%d \t%d \t%d \t%d\n", i, data[i].x,  data[i].y, data[i].label);
 #endif
   
   //init test points
@@ -113,10 +114,10 @@ int main() {
   }
 
 #ifdef DEBUG
-  uart_printf("\n\nTEST POINTS\n");
-  uart_printf("Idx \tX \tY\n");
+  printf("\n\nTEST POINTS\n");
+  printf("Idx \tX \tY\n");
   for (int k=0; k<M; k++)
-    uart_printf("%d \t%d \t%d\n", k, x[k].x, x[k].y);
+    printf("%d \t%d \t%d\n", k, x[k].x, x[k].y);
 #endif
   
   //
@@ -129,7 +130,7 @@ int main() {
   //compute distances to dataset points
 
 #ifdef DEBUG
-    uart_printf("\n\nProcessing x[%d]:\n", k);
+    printf("\n\nProcessing x[%d]:\n", k);
 #endif
 
     //init all k neighbors infinite distance
@@ -137,7 +138,7 @@ int main() {
       neighbor[j].dist = INFINITE;
 
 #ifdef DEBUG
-    uart_printf("Datum \tX \tY \tLabel \tDistance\n");
+    printf("Datum \tX \tY \tLabel \tDistance\n");
 #endif
     for (int i=0; i<N; i++) { //for all dataset points
       //compute distance to x[k]
@@ -152,7 +153,7 @@ int main() {
 
 #ifdef DEBUG
       //dataset
-      uart_printf("%d \t%d \t%d \t%d \t%d\n", i, data[i].x, data[i].y, data[i].label, d);
+      printf("%d \t%d \t%d \t%d \t%d\n", i, data[i].x, data[i].y, data[i].label, d);
 #endif
 
     }
@@ -178,14 +179,14 @@ int main() {
     votes_acc[best_voted]++;
     
 #ifdef DEBUG
-    uart_printf("\n\nNEIGHBORS of x[%d]=(%d, %d):\n", k, x[k].x, x[k].y);
-    uart_printf("K \tIdx \tX \tY \tDist \t\tLabel\n");
+    printf("\n\nNEIGHBORS of x[%d]=(%d, %d):\n", k, x[k].x, x[k].y);
+    printf("K \tIdx \tX \tY \tDist \t\tLabel\n");
     for (int j=0; j<K; j++)
-      uart_printf("%d \t%d \t%d \t%d \t%d \t%d\n", j+1, neighbor[j].idx, data[neighbor[j].idx].x,  data[neighbor[j].idx].y, neighbor[j].dist,  data[neighbor[j].idx].label);
+      printf("%d \t%d \t%d \t%d \t%d \t%d\n", j+1, neighbor[j].idx, data[neighbor[j].idx].x,  data[neighbor[j].idx].y, neighbor[j].dist,  data[neighbor[j].idx].label);
     
-    uart_printf("\n\nCLASSIFICATION of x[%d]:\n", k);
-    uart_printf("X \tY \tLabel\n");
-    uart_printf("%d \t%d \t%d\n\n\n", x[k].x, x[k].y, x[k].label);
+    printf("\n\nCLASSIFICATION of x[%d]:\n", k);
+    printf("X \tY \tLabel\n");
+    printf("%d \t%d \t%d\n\n\n", x[k].x, x[k].y, x[k].label);
 
 #endif
 
@@ -194,13 +195,13 @@ int main() {
   //stop knn here
   //read current timer count, compute elapsed time
   elapsedu = timer_time_us(TIMER_BASE);
-  uart_printf("\nExecution time: %dus @%dMHz\n\n", elapsedu, FREQ/1000000);
+  printf("\nExecution time: %dus @%dMHz\n\n", elapsedu, FREQ/1000000);
 
   
   //print classification distribution to check for statistical bias
   for (int l=0; l<C; l++)
-    uart_printf("%d ", votes_acc[l]);
-  uart_printf("\n");
+    printf("%d ", votes_acc[l]);
+  printf("\n");
   
 }
 

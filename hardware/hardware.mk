@@ -21,7 +21,7 @@ VSRC+=$(wildcard $(KNN_HW_DIR)/src/*.v)
 $(KNN_HW_INC_DIR)/KNNsw_reg_gen.v: $(KNN_HW_INC_DIR)/KNNsw_reg.v
 	$(LIB_DIR)/software/mkregs.py $< HW
 	mv KNNsw_reg_gen.v $(KNN_HW_INC_DIR)
-	mv KNNsw_reg_w.vh $(KNN_HW_INC_DIR)
+	mv KNNsw_reg.vh $(KNN_HW_INC_DIR)
 
 knn_clean_hw:
 	@rm -rf $(KNN_HW_INC_DIR)/sw_reg_gen.v $(KNN_HW_INC_DIR)/sw_reg_w.vh tmp $(KNN_HW_DIR)/fpga/vivado/XCKU $(KNN_HW_DIR)/fpga/quartus/CYCLONEV-GT
