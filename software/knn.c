@@ -1,29 +1,18 @@
+#include <stdlib.h>
+
 #include "system.h"
 #include "periphs.h"
-#include <iob-uart.h>
+#include "iob-uart.h"
 #include "iob_timer.h"
 #include "iob_knn.h"
-#include "random.h" //random generator for bare metal
 #include "printf.h" 
 
-//uncomment to use rand from C lib 
-//#define cmwc_rand rand
-
-#ifdef DEBUG //type make DEBUG=1 to print debug info
-#define S 12  //random seed
 #define N 10  //data set size
 #define K 4   //number of neighbours (K)
 #define C 4   //number data classes
 #define M 4   //number samples to be classified
-#else
-#define S 12   
-#define N 100000
-#define K 10  
-#define C 4  
-#define M 100 
-#endif
 
-#define INFINITE ~0
+#define INFINITE ~0 //-1
 
 //
 //Data structures
@@ -85,18 +74,18 @@ int main() {
   //int vote accumulator
   int votes_acc[C] = {0};
 
-  //generate random seed 
-  random_init(S);
+  //generate random seed
+  //srand(timer_time_us());   // Initialization, should only be called once.
 
   //init dataset
   for (int i=0; i<N; i++) {
 
     //init coordinates
-    data[i].x = (short) cmwc_rand();
-    data[i].y = (short) cmwc_rand();
+    data[i].x = (short) rand();
+    data[i].y = (short) rand();
 
     //init label
-    data[i].label = (unsigned char) (cmwc_rand()%C);
+    data[i].label = (unsigned char) (rand()%C);
   }
 
 #ifdef DEBUG
@@ -108,8 +97,8 @@ int main() {
   
   //init test points
   for (int k=0; k<M; k++) {
-    x[k].x  = (short) cmwc_rand();
-    x[k].y  = (short) cmwc_rand();
+    x[k].x  = (short) rand();
+    x[k].y  = (short) rand();
     //x[k].label will be calculated by the algorithm
   }
 
