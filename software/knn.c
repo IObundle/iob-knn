@@ -1,52 +1,40 @@
+#include <stdlib.h>
+
 #include "system.h"
 #include "periphs.h"
-#include <iob-uart.h>
+#include "iob-uart.h"
 #include "iob_timer.h"
-#include "iob_knn.h"
-#include "random.h" //random generator for bare metal
-#include "printf.h" 
+#include "printf.h"
 
-//uncomment to use rand from C lib 
-//#define cmwc_rand rand
+#define N 10  // data set size
+#define K 4   // number of neighbours (K)
+#define C 4   // number data classes
+#define M 4   // number samples to be classified
 
-#ifdef DEBUG //type make DEBUG=1 to print debug info
-#define S 12  //random seed
-#define N 10  //data set size
-#define K 4   //number of neighbours (K)
-#define C 4   //number data classes
-#define M 4   //number samples to be classified
-#else
-#define S 12   
-#define N 100000
-#define K 10  
-#define C 4  
-#define M 100 
-#endif
-
-#define INFINITE ~0
+#define INFINITE ~0 //-1
 
 //
-//Data structures
+// Data structures
 //
 
-//labeled dataset
+// labeled dataset
 struct datum {
   short x;
   short y;
   unsigned char label;
 } data[N], x[M];
 
-//neighbor info
+// neighbor info
 struct neighbor {
   unsigned int idx; //index in dataset array
   unsigned int dist; //distance to test point
 } neighbor[K];
 
 //
-//Functions
+// Functions
 //
 
-//square distance between 2 points a and b
+// square distance between 2 points a and b
 unsigned int sq_dist( struct datum a, struct datum b) {
   short X = a.x-b.x;
   unsigned int X2=X*X;
@@ -55,7 +43,7 @@ unsigned int sq_dist( struct datum a, struct datum b) {
   return (X2 + Y2);
 }
 
-//insert element in ordered array of neighbours
+// insert element in ordered array of neighbours
 void insert (struct neighbor element, unsigned int position) {
   for (int j=K-1; j>position; j--)
     neighbor[j] = neighbor[j-1];
@@ -66,37 +54,23 @@ void insert (struct neighbor element, unsigned int position) {
 
 
 ///////////////////////////////////////////////////////////////////
-int main() {
+void knn(void) {
 
-  unsigned long long elapsed;
-  unsigned int elapsedu;
-
-  //init uart and timer
-  uart_init(UART_BASE, FREQ/BAUD);
-  printf("\nInit timer\n");
-  uart_txwait();
-
-  timer_init(TIMER_BASE);
-  //read current timer count, compute elapsed time
-  //elapsed  = timer_get_count();
-  //elapsedu = timer_time_us();
-
-
-  //int vote accumulator
+  // int vote accumulator
   int votes_acc[C] = {0};
 
-  //generate random seed 
-  random_init(S);
+  // generate random seed
+  //srand(timer_time_us());   // Initialization, should only be called once.
 
-  //init dataset
+  // init dataset
   for (int i=0; i<N; i++) {
 
-    //init coordinates
-    data[i].x = (short) cmwc_rand();
-    data[i].y = (short) cmwc_rand();
+    // init coordinates
+    data[i].x = (short) rand();
+    data[i].y = (short) rand();
 
-    //init label
-    data[i].label = (unsigned char) (cmwc_rand()%C);
+    // init label
+    data[i].label = (unsigned char) (rand()%C);
   }
 
 #ifdef DEBUG
@@ -106,10 +80,10 @@ int main() {
     printf("%d \t%d \t%d \t%d\n", i, data[i].x,  data[i].y, data[i].label);
 #endif
   
-  //init test points
+  // init test points
   for (int k=0; k<M; k++) {
-    x[k].x  = (short) cmwc_rand();
-    x[k].y  = (short) cmwc_rand();
+    x[k].x  = (short) rand();
+    x[k].y  = (short) rand();
     //x[k].label will be calculated by the algorithm
   }
 
@@ -124,24 +98,28 @@ int main() {
   // PROCESS DATA
   //
 
-  //start knn here
+  // start knn here
+  printf("Start KNN...");
+
+  // Start time
+  unsigned int start_time = timer_time_us();
   
-  for (int k=0; k<M; k++) { //for all test points
-  //compute distances to dataset points
+  for (int k=0; k<M; k++) { // for all test points
+  // compute distances to dataset points
 
 #ifdef DEBUG
     printf("\n\nProcessing x[%d]:\n", k);
 #endif
 
-    //init all k neighbors infinite distance
+    // init all k neighbors infinite distance
     for (int j=0; j<K; j++)
       neighbor[j].dist = INFINITE;
 
 #ifdef DEBUG
     printf("Datum \tX \tY \tLabel \tDistance\n");
 #endif
-    for (int i=0; i<N; i++) { //for all dataset points
-      //compute distance to x[k]
+    for (int i=0; i<N; i++) { // for all dataset points
+      // compute distance to x[k]
       unsigned int d = sq_dist(x[k], data[i]);
 
       //insert in ordered list
@@ -152,22 +130,22 @@ int main() {
         }
 
 #ifdef DEBUG
-      //dataset
+      // dataset
       printf("%d \t%d \t%d \t%d \t%d\n", i, data[i].x, data[i].y, data[i].label, d);
 #endif
 
     }
 
     
-    //classify test point
+    // classify test point
 
-    //clear all votes
+    // clear all votes
     int votes[C] = {0};
     int best_votation = 0;
     int best_voted = 0;
 
-    //make neighbours vote
-    for (int j=0; j<K; j++) { //for all neighbors
+    // make neighbours vote
+    for (int j=0; j<K; j++) { // for all neighbors
       if ( (++votes[data[neighbor[j].idx].label]) > best_votation ) {
         best_voted = data[neighbor[j].idx].label;
         best_votation = votes[best_voted];
@@ -190,11 +168,14 @@ int main() {
 
 #endif
 
-  } //all test points classified
+  } // all test points classified
 
-  //stop knn here
-  //read current timer count, compute elapsed time
-  elapsedu = timer_time_us(TIMER_BASE);
+  // stop knn here
+  // read current timer count, compute elapsed time
+  unsigned int end_time = timer_time_us();
+  unsigned int elapsedu = end_time - start_time;
+
+  printf("done!\n");
   printf("\nExecution time: %dus @%dMHz\n\n", elapsedu, FREQ/1000000);
 
   
@@ -202,7 +183,8 @@ int main() {
   for (int l=0; l<C; l++)
     printf("%d ", votes_acc[l]);
   printf("\n");
-  
+
+  return;
 }
 
 

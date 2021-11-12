@@ -1,29 +1,34 @@
 include $(KNN_DIR)/core.mk
 
-#define
-DEFINE+=$(defmacro) DATA_W=32
+# SUBMODULES
+# Intercon
+ifneq (INTERCON,$(filter INTERCON, $(SUBMODULES)))
+SUBMODULES+=INTERCON
+include $(INTERCON_DIR)/hardware/hardware.mk
+endif
 
-#include
-INCLUDE+=$(incdir) $(KNN_HW_INC_DIR)
+# Lib
+ifneq (LIB,$(filter LIB, $(SUBMODULES)))
+SUBMODULES+=LIB
 INCLUDE+=$(incdir) $(LIB_DIR)/hardware/include
-INCLUDE+=$(incdir) $(INTERCON_DIR)/hardware/include 
-
-#headers
-VHDR+=$(wildcard $(KNN_HW_INC_DIR)/*.vh)
 VHDR+=$(wildcard $(LIB_DIR)/hardware/include/*.vh)
-VHDR+=$(wildcard $(INTERCON_DIR)/hardware/include/*.vh $(INTERCON_DIR)/hardware/include/*.v)
-VHDR+=$(KNN_HW_INC_DIR)/KNNsw_reg_gen.v
+endif
 
-#sources
-KNN_SRC_DIR:=$(KNN_DIR)/hardware/src
-VSRC+=$(wildcard $(KNN_HW_DIR)/src/*.v)
+# include
+INCLUDE+=$(incdir) $(KNN_INC_DIR)
 
-$(KNN_HW_INC_DIR)/KNNsw_reg_gen.v: $(KNN_HW_INC_DIR)/KNNsw_reg.v
+# headers
+VHDR+=$(wildcard $(KNN_INC_DIR)/*.vh)
+VHDR+=KNNsw_reg_gen.v KNNsw_reg.vh
+
+# sources
+VSRC+=$(wildcard $(KNN_SRC_DIR)/*.v)
+
+# cpu accessible registers
+KNNsw_reg_gen.v KNNsw_reg.vh: $(KNN_INC_DIR)/KNNsw_reg.v
 	$(LIB_DIR)/software/mkregs.py $< HW
-	mv KNNsw_reg_gen.v $(KNN_HW_INC_DIR)
-	mv KNNsw_reg.vh $(KNN_HW_INC_DIR)
 
 knn_clean_hw:
-	@rm -rf $(KNN_HW_INC_DIR)/sw_reg_gen.v $(KNN_HW_INC_DIR)/sw_reg_w.vh tmp $(KNN_HW_DIR)/fpga/vivado/XCKU $(KNN_HW_DIR)/fpga/quartus/CYCLONEV-GT
+	@rm -rf $(KNN_INC_DIR)/KNNsw_reg_gen.v $(KNN_INC_DIR)/KNNsw_reg.vh tmp
 
 .PHONY: knn_clean_hw

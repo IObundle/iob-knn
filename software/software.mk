@@ -1,10 +1,7 @@
 include $(KNN_DIR)/core.mk
 
-#path
-KNN_SW_DIR:=$(KNN_DIR)/software
-
 #define
-ifeq ($D,1)
+ifeq ($(DEBUG),1)
 DEFINE+=-DDEBUG
 endif
 
@@ -12,12 +9,10 @@ endif
 INCLUDE+=-I$(KNN_SW_DIR)
 
 #headers
-HDR+=$(KNN_SW_DIR)/*.h $(KNN_SW_DIR)/KNNsw_reg.h
+HDR+=$(KNN_SW_DIR)/*.h KNNsw_reg.h
 
 #sources
 SRC+=$(KNN_SW_DIR)/*.c
 
-$(KNN_SW_DIR)/KNNsw_reg.h: $(KNN_HW_INC_DIR)/KNNsw_reg.v
+KNNsw_reg.h: $(KNN_INC_DIR)/KNNsw_reg.v
 	$(LIB_DIR)/software/mkregs.py $< SW
-	mv KNNsw_reg.h $@
-
