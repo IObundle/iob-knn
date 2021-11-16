@@ -36,13 +36,6 @@ module iob_knn
       .clk(clk),
       .rst(rst_int)
       );
-   
-   
-   //ready signal   
-   `SIGNAL(ready_int, 1)
-   `REG_AR(clk, rst, 0, ready_int, valid)
-
-   `SIGNAL2OUT(ready, ready_int)
 
    //rdata signal
    //`COMB begin

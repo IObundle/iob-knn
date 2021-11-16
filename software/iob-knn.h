@@ -1,5 +1,0 @@
-//
-// Functions
-//
-
-void knn(void);
