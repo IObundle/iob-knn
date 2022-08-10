@@ -1,5 +1,5 @@
 KNN_DIR:=.
-include core.mk
+include config.mk
 
 #
 # SIMULATE

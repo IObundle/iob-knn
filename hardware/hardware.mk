@@ -1,4 +1,4 @@
-include $(KNN_DIR)/core.mk
+include $(KNN_DIR)/config.mk
 
 # SUBMODULES
 # Intercon
