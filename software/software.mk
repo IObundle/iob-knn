@@ -1,13 +1,12 @@
-include $(KNN_DIR)/core.mk
+include $(KNN_DIR)/config.mk
 
 #include
 INCLUDE+=-I$(KNN_SW_DIR)
 
 #headers
-#HDR+=$(KNN_SW_DIR)/*.h KNNsw_reg.h
+HDR+=iob_knn_swreg.h
 
-#sources
-#SRC+=$(KNN_SW_DIR)/*.c
 
-KNNsw_reg.h: $(KNN_INC_DIR)/KNNsw_reg.v
-	$(LIB_DIR)/software/mkregs.py $< SW
+iob_knn_swreg.h: 
+	$(MKREGS) iob_knn $(KNN_DIR) SW 
+
